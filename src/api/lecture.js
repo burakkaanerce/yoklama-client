@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const fetchRegistrationFunc = ({ lectureId, lecturerId }) => axios.post('http://localhost:4000/api/registration/list', { lectureId, lecturerId })
+export const findLectureFunc = ({ name, code }) => axios.post('http://localhost:4000/api/lecture/list', { name, code })
   .then((result) => {
     console.log('result: ', { result });
     return result;
@@ -10,7 +10,7 @@ export const fetchRegistrationFunc = ({ lectureId, lecturerId }) => axios.post('
     throw Error('INVALID_CREDENTIALS');
   });
 
-export const addRegistrationFunc = ({ startDate, endDate, lectureId, lecturerId }) => axios.post('http://localhost:4000/api/registration/add', { startDate, endDate, lectureId, lecturerId })
+export const addLectureFunc = ({ name, code, lecturerId }) => axios.post('http://localhost:4000/api/lecture/add', { name, code, lecturerId })
   .then((result) => {
     console.log('result: ', { result });
     return result;

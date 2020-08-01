@@ -14,7 +14,9 @@
     "no-console": 0,
     "react/jsx-props-no-spreading": 0,
     "react/button-has-type": 0,
-    "no-extra-boolean-cast": 0
+    "no-extra-boolean-cast": 0,
+    "no-nested-ternary":"off",
+    "linebreak-style":"off"
   },
   "settings": {
     "import/resolver": {

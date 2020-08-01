@@ -2,10 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import { Provider } from 'react-redux';
+import tr from 'date-fns/locale/tr';
+import { registerLocale } from 'react-datepicker';
 import App from './App';
 import store from './app/store';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-datepicker/dist/react-datepicker.css';
+
+registerLocale('tr', tr);
 
 ReactDOM.render(
   <React.StrictMode>
