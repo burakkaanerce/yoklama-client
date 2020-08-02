@@ -10,6 +10,7 @@
     "axios": "^0.19.2",
     "bootstrap": "^4.5.0",
     "date-fns": "^2.15.0",
+    "express": "^4.17.1",
     "formik": "^2.1.5",
     "moment": "^2.27.0",
     "react": "^16.13.1",
@@ -33,7 +34,7 @@
     "eslint-plugin-react": "^7.19.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
