@@ -1,7 +1,7 @@
 import {
   createSlice,
 } from '@reduxjs/toolkit';
-import { addRegistrationFunc, fetchRegistrationFunc, fetchRegistrationsFunc, registerFunc, closeAccessRegistrationFunc, downloadRegistrationListFunc } from '../api/registration';
+import { addRegistrationFunc, fetchRegistrationFunc, fetchRegistrationsFunc, registerFunc, closeAccessRegistrationFunc, downloadRegistrationListFunc, deleteRegistrationFunc } from '../api/registration';
 
 const initialState = {
   loading: {
@@ -11,6 +11,7 @@ const initialState = {
     register: false,
     closeAccessRegistration: false,
     downloadRegistrationList: false,
+    deleteRegistration: false,
   },
   hasErrors: {
     addRegistration: false,
@@ -19,6 +20,7 @@ const initialState = {
     register: false,
     closeAccessRegistration: false,
     downloadRegistrationList: false,
+    deleteRegistration: false,
   },
   registrations: [],
   registration: null,
@@ -34,12 +36,18 @@ const registrationSlice = createSlice({
     }) => {
       state.loading[payload] = true;
       state.hasErrors[payload] = false;
+      if(payload === 'fetchRegistrations') {
+        state.registrations = []
+      }
     },
     asyncFailure: (state, {
       payload,
     }) => {
       state.loading[payload] = false;
       state.hasErrors[payload] = true;
+      if(payload === 'fetchRegistrations') {
+        state.registrations = []
+      }
     },
     fetchRegistrationSuccess: (state, {
       payload,
@@ -52,8 +60,8 @@ const registrationSlice = createSlice({
       payload,
     }) => {
       state.registrations = payload;
-      state.loading.addRegistration = false;
-      state.hasErrors.addRegistration = false;
+      state.loading.fetchRegistrations = false;
+      state.hasErrors.fetchRegistrations = false;
     },
     addRegistrationSuccess: (state, {
       payload,
@@ -128,11 +136,12 @@ export const fetchRegistration = ({ id }) => async (dispatch) => {
   }
 };
 
-export const fetchRegistrations = ({ lectureId, lecturerId }) => async (dispatch) => {
+export const fetchRegistrations = ({ lectureId, lecturerId }) => async (dispatch, state) => {
   dispatch(asyncStart('fetchRegistrations'));
 
   try {
-    const returnResponse = await fetchRegistrationsFunc({ lectureId, lecturerId })
+    const token = state().auth.auth.token;
+    const returnResponse = await fetchRegistrationsFunc({ token, lectureId, lecturerId })
       .then((result) => {
         console.log('result: ', result);
         const { data } = result;
@@ -141,6 +150,7 @@ export const fetchRegistrations = ({ lectureId, lecturerId }) => async (dispatch
           const { success, registration } = data;
 
           if (success && registration) {
+
             dispatch(fetchRegistrationsSuccess(registration));
             return registration;
           }
@@ -163,12 +173,13 @@ export const fetchRegistrations = ({ lectureId, lecturerId }) => async (dispatch
 
 export const addRegistration = ({
   startDate, endDate, lectureId, lecturerId,
-}) => async (dispatch) => {
+}) => async (dispatch, state) => {
   dispatch(asyncStart('addRegistration'));
 
   try {
+    const token = state().auth.auth.token;
     const returnResponse = await addRegistrationFunc({
-      startDate, endDate, lectureId, lecturerId,
+      token, startDate, endDate, lectureId, lecturerId,
     })
       .then((result) => {
         console.log('result: ', result);
@@ -230,11 +241,12 @@ export const register = ({ firstname, lastname, stuNo, registrationId}) => async
   }
 }
 
-export const closeAccessRegistration = ({ registrationId}) => async (dispatch) => {
+export const closeAccessRegistration = ({ registrationId}) => async (dispatch, state) => {
   dispatch(asyncStart('closeAccessRegistration'));
 
   try {
-    const returnResponse = await closeAccessRegistrationFunc({ registrationId})
+    const token = state().auth.auth.token;
+    const returnResponse = await closeAccessRegistrationFunc({ token, registrationId})
       .then((result) => {
         console.log('result: ', result);
         const { data } = result;
@@ -262,20 +274,21 @@ export const closeAccessRegistration = ({ registrationId}) => async (dispatch) =
   }
 }
 
-export const downloadRegistrationList = ({ registrationId}) => async (dispatch) => {
+export const downloadRegistrationList = ({ registrationId}) => async (dispatch, state) => {
   dispatch(asyncStart('downloadRegistrationList'));
 
   try {
-    const returnResponse = await downloadRegistrationListFunc({ registrationId})
+    const token = state().auth.auth.token;
+    const returnResponse = await downloadRegistrationListFunc({ token, registrationId})
       .then((result) => {
         console.log('result: ', result);
         const { data } = result;
         console.log('data: ', data);
         if (data) {
-          const { success, message } = data;
+          const { success, message, filename } = data;
 
-          if (success && message) {
-            return message;
+          if (success && message && filename) {
+            return filename;
           }
           throw Error('DOWNLOAD_LIST_FAILED');
         } else {
@@ -291,5 +304,38 @@ export const downloadRegistrationList = ({ registrationId}) => async (dispatch) 
   } catch (error) {
     console.log('failed: ', error);
     dispatch(asyncFailure('downloadRegistrationList'));
+  }
+}
+
+export const deleteRegistration = ({ registrationId}) => async (dispatch, state) => {
+  dispatch(asyncStart('deleteRegistration'));
+
+  try {
+    const token = state().auth.auth.token;
+    const returnResponse = await deleteRegistrationFunc({ token, registrationId})
+      .then((result) => {
+        console.log('result: ', result);
+        const { data } = result;
+        console.log('data: ', data);
+        if (data) {
+          const { success, message } = data;
+
+          if (success && message) {
+            return message;
+          }
+          throw Error('DELETE_REGS_FAILED');
+        } else {
+          throw Error('REQUEST_FAILED');
+        }
+      })
+      .catch((error) => {
+        console.log('error: ', error);
+        throw error || Error('REQUEST_FAILED');
+      });
+    console.log('returnResponse: ', returnResponse);
+    return returnResponse;
+  } catch (error) {
+    console.log('failed: ', error);
+    dispatch(asyncFailure('deleteRegistration'));
   }
 }

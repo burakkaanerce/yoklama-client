@@ -3,21 +3,23 @@ import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 
 import {
-  Container, Row, Col, Button, Modal, Form, InputGroup, Alert,
+  Container, Row, Col, Button, Modal, Form, InputGroup, Spinner,
 } from 'react-bootstrap';
 
 import { Formik } from 'formik';
 import * as yup from 'yup';
 
+import axios from 'axios';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import RegisterList from '../../components/RegisterList';
+import RegistrationList from '../../components/Registration/RegistrationList';
 import Autocomplete from '../../components/Forms/Autocomplete';
 
 import { addLecture } from '../../slices/lectureSlice';
 import {
-  registrationSelector, addRegistration, fetchRegistrations, closeAccessRegistration, downloadRegistrationList
+  registrationSelector, addRegistration, fetchRegistrations, closeAccessRegistration, downloadRegistrationList, deleteRegistration
 } from '../../slices/registrationSlice';
 import { authSelector } from '../../slices/userSlice';
 
@@ -30,7 +32,7 @@ export default () => {
   const history = useHistory();
 
   const { auth } = useSelector(authSelector);
-  const { registrations } = useSelector(registrationSelector);
+  const { loading, registrations } = useSelector(registrationSelector);
 
   useEffect(() => {
     if (auth) {
@@ -39,6 +41,10 @@ export default () => {
       history.push('/');
     }
   }, []);
+
+  useEffect(() => {
+    
+  }, [registrations])
 
   const [show, setShow] = useState(false);
   const [isNew, setNew] = useState(false);
@@ -54,7 +60,7 @@ export default () => {
   const handleShow = () => setShow(true);
 
   return (
-    <Container fluid>
+    <Container fluid className="m-0" style={{ backgroundColor: '#b0bec5'}}>
       <Formik
         validationSchema={schema}
         onSubmit={(values, action) => {
@@ -254,9 +260,12 @@ export default () => {
           Yoklama Listesi Oluştur
         </Button>
       </div>
-      <div className="d-flex flex-wrap justify-content-center">
-        {registrations.map((registration) => (
-          <RegisterList
+      <div className="d-flex flex-column">
+        {loading.fetchRegistrations ? (
+          <Spinner animation="border" variant="primary" /> 
+        ) : null}
+        {/* {registrations.map((registration) => (
+          <RegistrationBox
             registration={registration}
             onCloseAccess={(registrationId) => {
               dispatch(closeAccessRegistration({ registrationId })).then(result => {
@@ -266,6 +275,39 @@ export default () => {
             }}
             onDownload={(registrationId) => {
               dispatch(downloadRegistrationList({ registrationId }));
+            }}
+          />
+        ))} */}
+        {registrations.map((registration) => (
+          <RegistrationList
+            registration={registration}
+            onCloseAccess={(registrationId) => {
+              dispatch(closeAccessRegistration({ registrationId })).then(result => {
+                console.log("result: ", result)
+                dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
+              });
+            }}
+            onDownload={(registrationId) => {
+              dispatch(downloadRegistrationList({ registrationId })).then(result => {
+                axios({
+                  url: 'http://localhost:4000/downloads/Yoklama.xlsx',
+                  method: 'GET',
+                  responseType: 'blob', // important
+                }).then((response) => {
+                  const url = window.URL.createObjectURL(new Blob([response.data]));
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.setAttribute('download', result);
+                  document.body.appendChild(link);
+                  link.click();
+                });
+              });
+            }}
+            onDelete={(registrationId) => {
+              dispatch(deleteRegistration({ registrationId })).then(result => {
+                console.log("result: ", result)
+                dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
+              });
             }}
           />
         ))}

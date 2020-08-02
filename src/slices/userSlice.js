@@ -49,6 +49,20 @@ export default authSlice.reducer;
 
 export const authSelector = (state) => state.auth;
 
+export const loginAction = ({ token, user }) => async (dispatch) => {
+  dispatch(asyncStart('loginProcess'));
+
+  try {
+    const userResponse = { token, user };
+    console.log('userResponse: ', userResponse);
+    dispatch(loginProcessSuccess(userResponse));
+    return userResponse;
+  } catch (error) {
+    console.log('failed: ', error);
+    dispatch(asyncFailure('loginProcess'));
+  }
+};
+
 export const loginProcess = ({ email, password }) => async (dispatch) => {
   dispatch(asyncStart('loginProcess'));
 

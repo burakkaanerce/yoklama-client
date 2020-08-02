@@ -9,3 +9,13 @@ export const loginProcessFunc = ({ email, password }) => axios.post('http://loca
     console.log('error: ', { error });
     throw Error('INVALID_CREDENTIALS');
   });
+
+  export const whoAmIFunc = ({ token }) => axios.post('http://localhost:4000/api/lecturer/whoami', { token })
+  .then((result) => {
+    console.log('result: ', { result });
+    return result;
+  })
+  .catch((error) => {
+    console.log('error: ', { error });
+    throw Error('INVALID_CREDENTIALS');
+  });

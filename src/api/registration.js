@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 export const fetchRegistrationFunc = ({ id }) => axios.post(
-    'http://localhost:4000/api/registration/find',
-    { id }
-  )
+  'http://localhost:4000/api/registration/findone',
+  { id },
+)
   .then((result) => {
     console.log('result: ', { result });
     return result;
@@ -13,7 +13,13 @@ export const fetchRegistrationFunc = ({ id }) => axios.post(
     throw Error('INVALID_CREDENTIALS');
   });
 
-export const fetchRegistrationsFunc = ({ lectureId, lecturerId }) => axios.post('http://localhost:4000/api/registration/list', { lectureId, lecturerId })
+export const fetchRegistrationsFunc = ({ token, lectureId, lecturerId }) => axios.post('http://localhost:4000/api/registration/list',
+  { lectureId, lecturerId },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
   .then((result) => {
     console.log('result: ', { result });
     return result;
@@ -23,7 +29,17 @@ export const fetchRegistrationsFunc = ({ lectureId, lecturerId }) => axios.post(
     throw Error('INVALID_CREDENTIALS');
   });
 
-export const addRegistrationFunc = ({ startDate, endDate, lectureId, lecturerId }) => axios.post('http://localhost:4000/api/registration/add', { startDate, endDate, lectureId, lecturerId })
+export const addRegistrationFunc = ({
+  token, startDate, endDate, lectureId, lecturerId,
+}) => axios.post('http://localhost:4000/api/registration/add',
+  {
+    startDate, endDate, lectureId, lecturerId,
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
   .then((result) => {
     console.log('result: ', { result });
     return result;
@@ -32,33 +48,65 @@ export const addRegistrationFunc = ({ startDate, endDate, lectureId, lecturerId 
     console.log('error: ', { error });
     throw Error('INVALID_CREDENTIALS');
   });
-  
-export const registerFunc = ({ firstname, lastname, stuNo, registrationId}) => axios.post('http://localhost:4000/api/registration/register', { firstname, lastname, stuNo, registrationId})
-.then((result) => {
-  console.log('result: ', { result });
-  return result;
-})
-.catch((error) => {
-  console.log('error: ', { error });
-  throw Error('INVALID_CREDENTIALS');
-});
 
-export const closeAccessRegistrationFunc = ({ registrationId }) => axios.post('http://localhost:4000/api/registration/close', { registrationId })
-.then((result) => {
-  console.log('result: ', { result });
-  return result;
+export const registerFunc = ({
+  firstname, lastname, stuNo, registrationId,
+}) => axios.post('http://localhost:4000/api/registration/register', {
+  firstname, lastname, stuNo, registrationId,
 })
-.catch((error) => {
-  console.log('error: ', { error });
-  throw Error('INVALID_CREDENTIALS');
-});
+  .then((result) => {
+    console.log('result: ', { result });
+    return result;
+  })
+  .catch((error) => {
+    console.log('error: ', { error });
+    throw Error('INVALID_CREDENTIALS');
+  });
 
-export const downloadRegistrationListFunc = ({ registrationId }) => axios.post('http://localhost:4000/api/registration/download', { registrationId })
-.then((result) => {
-  console.log('result: ', { result });
-  return result;
-})
-.catch((error) => {
-  console.log('error: ', { error });
-  throw Error('INVALID_CREDENTIALS');
-});
+export const closeAccessRegistrationFunc = ({ token, registrationId }) => axios.post('http://localhost:4000/api/registration/close',
+  { registrationId },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  .then((result) => {
+    console.log('result: ', { result });
+    return result;
+  })
+  .catch((error) => {
+    console.log('error: ', { error });
+    throw Error('INVALID_CREDENTIALS');
+  });
+
+export const downloadRegistrationListFunc = ({ token, registrationId }) => axios.post('http://localhost:4000/api/registration/download',
+  { registrationId },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  .then((result) => {
+    console.log('result: ', { result });
+    return result;
+  })
+  .catch((error) => {
+    console.log('error: ', { error });
+    throw Error('INVALID_CREDENTIALS');
+  });
+
+  export const deleteRegistrationFunc = ({ token, registrationId }) => axios.post('http://localhost:4000/api/registration/delete',
+  { registrationId },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  .then((result) => {
+    console.log('result: ', { result });
+    return result;
+  })
+  .catch((error) => {
+    console.log('error: ', { error });
+    throw Error('INVALID_CREDENTIALS');
+  });
