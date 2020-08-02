@@ -16,9 +16,8 @@ transition: all 300ms;
 box-shadow: 0px 2px 4px 2px #78909c;
 }
 `;
-export default ({registration}) => {
-  const [clicked, setClick] = useState(false);
-  const { Lecture, Lecturer, start_date: startDate, end_date: endDate, id } = registration;
+export default ({registration, onCloseAccess, onDownload}) => {
+  const { Lecture, Lecturer, start_date: startDate, end_date: endDate, id, status } = registration;
   const { name, code } = Lecture;
   return (
     <RegisterList className="m-2 d-flex">
@@ -34,18 +33,26 @@ export default ({registration}) => {
           Bağlantı Linki:
           <br />
           <span style={{ fontSize: '10px' }}>
-            https://yoklama.com/register/{id}
+            http://localhost:3000/register/{id}
           </span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {status ? (
+          <Button
+          style={{ flex: 1 }}
+          onClick={() => {
+            onDownload(id)
+          }}
+          >Listeyi İndir</Button>
+          ) : (
           <Button
             style={{ flex: 1, borderTopLeftRadius: 0, borderTopRightRadius: 0, }}
             onClick={() => {
-              setClick(true);
+              onCloseAccess(id)
             }}
           >Erişime Kapat
           </Button>
-          {clicked ? (<Button style={{ flex: 1 }}>Listeyi İndir</Button>) : null}
+          )}
         </div>
       </div>
     </RegisterList>

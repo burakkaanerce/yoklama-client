@@ -1,24 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 
 import {
-  Container, Row, Col, Form, InputGroup, Button,
+  Container, Row, Col, Form, InputGroup, Button, Spinner
 } from 'react-bootstrap';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 
+import { useSelector, useDispatch } from 'react-redux';
+
+import { registrationSelector, fetchRegistration, register } from '../slices/registrationSlice';
+
 const schema = yup.object({
-  stuName: yup.string().required(),
-  stuLastname: yup.string().required(),
+  firstname: yup.string().required(),
+  lastname: yup.string().required(),
   stuNo: yup.number().required(),
 });
 
 export default () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+
   const { id } = useParams();
+
+  const { loading, registration, registered } = useSelector(registrationSelector);
+
+  const [isValid, setIsValid] = useState(true)
+
   console.log('id: ', id);
 
-  if (id !== '123') {
+  if (!id) {
+    history.push('/');
+  }
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchRegistration({ id }));
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if(registration) {
+      const { status, start_date: startDate, end_date: endDate} = registration;
+      const tempDate = new Date();
+      const dateStart = new Date(startDate)
+      const dateEnd = new Date(endDate)
+      console.log(registration.status, tempDate, dateStart, dateEnd, tempDate - dateStart, dateEnd - tempDate)
+      if(registration.status || !(tempDate - dateStart > 0 && dateEnd - tempDate > 0)) {
+        setIsValid(false)
+      }
+    }
+  }, [registration])
+
+  if (!isValid) {
     return (
       <div>
         ERİŞİME KISITLI LİNK
@@ -28,14 +63,25 @@ export default () => {
 
   return (
     <Container fluid className="d-flex flex-column" style={{ height: '100vh' }}>
+      {loading.register ? (
+        <Spinner animation="border" variant="primary" />
+      ) : 
+      registered ? (
+      <div>
+      Kayıt Başarılı !
+    </div>
+      ) : (
       <Formik
         validationSchema={schema}
         onSubmit={(values) => {
           console.log('values: ', values);
+
+          const {firstname, lastname, stuNo} = values
+          dispatch(register({ firstname, lastname, stuNo, registrationId: id}))
         }}
         initialValues={{
-          stuName: '',
-          stuLastname: '',
+          firstname: '',
+          lastname: '',
           stuNo: '',
         }}
       >
@@ -50,35 +96,35 @@ export default () => {
         }) => (
           <Form noValidate onSubmit={handleSubmit} className="d-flex flex-grow-1 justify-content-center flex-column">
             <Form.Row className="d-flex my-4 mx-2">
-              <Form.Group as={Col} xs="12" md="4" controlId="stuName">
+              <Form.Group as={Col} xs="12" md="4" controlId="firstname">
                 <Form.Label>Adı</Form.Label>
                 <InputGroup>
                   <Form.Control
                     type="text"
                     placeholder="Adı"
-                    name="stuName"
-                    value={values.stuName}
+                    name="firstname"
+                    value={values.firstname}
                     onChange={handleChange}
-                    isInvalid={!!errors.stuName && !!touched.stuName}
+                    isInvalid={!!errors.firstname && !!touched.firstname}
                   />
                   <Form.Control.Feedback type="invalid" tooltip>
-                    {errors.stuName}
+                    {errors.firstname}
                   </Form.Control.Feedback>
                 </InputGroup>
               </Form.Group>
-              <Form.Group as={Col} xs="12" md="4" controlId="stuLastname">
+              <Form.Group as={Col} xs="12" md="4" controlId="lastname">
                 <Form.Label>Soyadı</Form.Label>
                 <InputGroup>
                   <Form.Control
                     type="text"
                     placeholder="Soyadı"
-                    name="stuLastname"
-                    value={values.stuLastname}
+                    name="lastname"
+                    value={values.lastname}
                     onChange={handleChange}
-                    isInvalid={!!errors.stuLastname && !!touched.stuLastname}
+                    isInvalid={!!errors.lastname && !!touched.lastname}
                   />
                   <Form.Control.Feedback type="invalid" tooltip>
-                    {errors.stuLastname}
+                    {errors.lastname}
                   </Form.Control.Feedback>
                 </InputGroup>
               </Form.Group>
@@ -104,7 +150,7 @@ export default () => {
             </Form.Row>
           </Form>
         )}
-      </Formik>
+      </Formik>)}
     </Container>
   );
 };

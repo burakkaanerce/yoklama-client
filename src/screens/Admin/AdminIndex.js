@@ -16,7 +16,9 @@ import RegisterList from '../../components/RegisterList';
 import Autocomplete from '../../components/Forms/Autocomplete';
 
 import { addLecture } from '../../slices/lectureSlice';
-import { registrationSelector, addRegistration, fetchRegistration } from '../../slices/registrationSlice';
+import {
+  registrationSelector, addRegistration, fetchRegistrations, closeAccessRegistration, downloadRegistrationList
+} from '../../slices/registrationSlice';
 import { authSelector } from '../../slices/userSlice';
 
 const schema = yup.object({
@@ -32,7 +34,7 @@ export default () => {
 
   useEffect(() => {
     if (auth) {
-      dispatch(fetchRegistration({ lecturerId: auth.user.id }));
+      dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
     } else {
       history.push('/');
     }
@@ -43,7 +45,7 @@ export default () => {
 
   const handleClose = () => {
     if (auth) {
-      dispatch(fetchRegistration({ lecturerId: auth.user.id }));
+      dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
     } else {
       history.push('/');
     }
@@ -75,7 +77,7 @@ export default () => {
               startDate, endDate, lectureId, lecturerId: auth.user.id,
             })).then((registerResult) => {
               console.log('registerResult: ', registerResult);
-              dispatch(fetchRegistration({ lecturerId: auth.user.id }));
+              dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
               setShow(false);
               return registerResult;
             }).catch((registerError) => {
@@ -90,7 +92,7 @@ export default () => {
                 startDate, endDate, lectureId: lectureResult.id, lecturerId: auth.user.id,
               })).then((registerResult) => {
                 console.log('registerResult: ', registerResult);
-                dispatch(fetchRegistration({ lecturerId: auth.user.id }));
+                dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
                 setShow(false);
                 return registerResult;
               }).catch((registerError) => {
@@ -146,12 +148,19 @@ export default () => {
                         isNew={isNew}
                         setNew={(value) => {
                           setNew(value);
-                          if (!value) setFieldValue('name', '');
+                          if (!value) {
+                            setFieldValue('name', '');
+                            setFieldValue('lectureId', null);
+                          }
                         }}
                         selectedLecture={values.lectureId || null}
                         onSelectLecture={(lecture) => {
-                          setFieldValue('lectureId', lecture.id);
-                          setFieldValue('code', lecture.code);
+                          if (lecture) {
+                            setFieldValue('lectureId', lecture.id);
+                            setFieldValue('code', lecture.code);
+                          } else {
+                            setFieldValue('lectureId', null);
+                          }
                         }}
                       />
                       {isNew ? (
@@ -247,7 +256,18 @@ export default () => {
       </div>
       <div className="d-flex flex-wrap justify-content-center">
         {registrations.map((registration) => (
-          <RegisterList registration={registration} />
+          <RegisterList
+            registration={registration}
+            onCloseAccess={(registrationId) => {
+              dispatch(closeAccessRegistration({ registrationId })).then(result => {
+                console.log("result: ", result)
+                dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
+              });
+            }}
+            onDownload={(registrationId) => {
+              dispatch(downloadRegistrationList({ registrationId }));
+            }}
+          />
         ))}
       </div>
     </Container>
