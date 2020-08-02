@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const findLectureFunc = ({ name, code }) => axios.post('http://localhost:4000/api/lecture/list', { name, code })
+export const findLectureFunc = ({ name, code }) => axios.post('https://yoklama-api.herokuapp.com/api/lecture/list', { name, code })
   .then((result) => {
     console.log('result: ', { result });
     return result;
@@ -10,7 +10,7 @@ export const findLectureFunc = ({ name, code }) => axios.post('http://localhost:
     throw Error('INVALID_CREDENTIALS');
   });
 
-export const addLectureFunc = ({ name, code, lecturerId }) => axios.post('http://localhost:4000/api/lecture/add', { name, code, lecturerId })
+export const addLectureFunc = ({ name, code, lecturerId }) => axios.post('https://yoklama-api.herokuapp.com/api/lecture/add', { name, code, lecturerId })
   .then((result) => {
     console.log('result: ', { result });
     return result;

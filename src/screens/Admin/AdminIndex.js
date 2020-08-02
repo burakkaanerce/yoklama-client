@@ -290,7 +290,7 @@ export default () => {
             onDownload={(registrationId) => {
               dispatch(downloadRegistrationList({ registrationId })).then(result => {
                 axios({
-                  url: 'http://localhost:4000/downloads/Yoklama.xlsx',
+                  url: 'https://yoklama-api.herokuapp.com/downloads/Yoklama.xlsx',
                   method: 'GET',
                   responseType: 'blob', // important
                 }).then((response) => {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const fetchRegistrationFunc = ({ id }) => axios.post(
-  'http://localhost:4000/api/registration/findone',
+  'https://yoklama-api.herokuapp.com/api/registration/findone',
   { id },
 )
   .then((result) => {
@@ -13,7 +13,7 @@ export const fetchRegistrationFunc = ({ id }) => axios.post(
     throw Error('INVALID_CREDENTIALS');
   });
 
-export const fetchRegistrationsFunc = ({ token, lectureId, lecturerId }) => axios.post('http://localhost:4000/api/registration/list',
+export const fetchRegistrationsFunc = ({ token, lectureId, lecturerId }) => axios.post('https://yoklama-api.herokuapp.com/api/registration/list',
   { lectureId, lecturerId },
   {
     headers: {
@@ -31,7 +31,7 @@ export const fetchRegistrationsFunc = ({ token, lectureId, lecturerId }) => axio
 
 export const addRegistrationFunc = ({
   token, startDate, endDate, lectureId, lecturerId,
-}) => axios.post('http://localhost:4000/api/registration/add',
+}) => axios.post('https://yoklama-api.herokuapp.com/api/registration/add',
   {
     startDate, endDate, lectureId, lecturerId,
   },
@@ -51,7 +51,7 @@ export const addRegistrationFunc = ({
 
 export const registerFunc = ({
   firstname, lastname, stuNo, registrationId,
-}) => axios.post('http://localhost:4000/api/registration/register', {
+}) => axios.post('https://yoklama-api.herokuapp.com/api/registration/register', {
   firstname, lastname, stuNo, registrationId,
 })
   .then((result) => {
@@ -63,7 +63,7 @@ export const registerFunc = ({
     throw Error('INVALID_CREDENTIALS');
   });
 
-export const closeAccessRegistrationFunc = ({ token, registrationId }) => axios.post('http://localhost:4000/api/registration/close',
+export const closeAccessRegistrationFunc = ({ token, registrationId }) => axios.post('https://yoklama-api.herokuapp.com/api/registration/close',
   { registrationId },
   {
     headers: {
@@ -79,7 +79,7 @@ export const closeAccessRegistrationFunc = ({ token, registrationId }) => axios.
     throw Error('INVALID_CREDENTIALS');
   });
 
-export const downloadRegistrationListFunc = ({ token, registrationId }) => axios.post('http://localhost:4000/api/registration/download',
+export const downloadRegistrationListFunc = ({ token, registrationId }) => axios.post('https://yoklama-api.herokuapp.com/api/registration/download',
   { registrationId },
   {
     headers: {
@@ -95,7 +95,7 @@ export const downloadRegistrationListFunc = ({ token, registrationId }) => axios
     throw Error('INVALID_CREDENTIALS');
   });
 
-  export const deleteRegistrationFunc = ({ token, registrationId }) => axios.post('http://localhost:4000/api/registration/delete',
+  export const deleteRegistrationFunc = ({ token, registrationId }) => axios.post('https://yoklama-api.herokuapp.com/api/registration/delete',
   { registrationId },
   {
     headers: {
