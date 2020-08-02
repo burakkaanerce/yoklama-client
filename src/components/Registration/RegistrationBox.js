@@ -33,7 +33,7 @@ export default ({registration, onCloseAccess, onDownload}) => {
           Bağlantı Linki:
           <br />
           <span style={{ fontSize: '10px' }}>
-            http://localhost:3000/register/{id}
+            https://yoklama-listesi.herokuapp.com/register/{id}
           </span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>

@@ -36,7 +36,7 @@ export default ({ registration, onCloseAccess, onDownload, onDelete }) => {
         </Modal.Header>
         <Modal.Body>
           <span style={{ fontSize: '12px' }}>
-            http://localhost:3000/register/{id}
+          https://yoklama-listesi.herokuapp.com/register/{id}
           </span>
         </Modal.Body>
       </Modal>
@@ -72,7 +72,7 @@ export default ({ registration, onCloseAccess, onDownload, onDelete }) => {
             className="flex-grow-1 bg-info"
             onClick={() => {
               handleShow();
-              navigator.clipboard.writeText(`http://localhost:3000/register/${id}`).then(() => {
+              navigator.clipboard.writeText(`https://yoklama-listesi.herokuapp.com/register/${id}`).then(() => {
                 /* clipboard successfully set */
                 console.log('copied');
               }, () => {
