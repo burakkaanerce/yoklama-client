@@ -36,6 +36,13 @@ const authSlice = createSlice({
       state.loading.loginProcess = false;
       state.hasErrors.loginProcess = false;
     },
+    logoutProcessSuccess: (state, {
+      payload
+    }) => {
+      state.auth = null;
+      state.loading.logoutProcess = false;
+      state.hasErrors.logoutProcess = false;
+    }
   },
 });
 
@@ -43,6 +50,7 @@ export const {
   asyncStart,
   asyncFailure,
   loginProcessSuccess,
+  logoutProcessSuccess,
 } = authSlice.actions;
 
 export default authSlice.reducer;
@@ -54,7 +62,7 @@ export const loginAction = ({ token, user }) => async (dispatch) => {
 
   try {
     const userResponse = { token, user };
-    console.log('userResponse: ', userResponse);
+    
     dispatch(loginProcessSuccess(userResponse));
     return userResponse;
   } catch (error) {
@@ -69,15 +77,15 @@ export const loginProcess = ({ email, password }) => async (dispatch) => {
   try {
     const returnResponse = await loginProcessFunc({ email, password })
       .then((result) => {
-        console.log('result: ', result);
+        
         const { data } = result;
-        console.log('data: ', data);
+        
         if (data) {
           const { success, token, user } = data;
 
           if (success && token && user) {
             const userResponse = { token, user };
-            console.log('userResponse: ', userResponse);
+            
             if (typeof window !== 'undefined') {
               localStorage.setItem('token', token);
             }
@@ -93,10 +101,24 @@ export const loginProcess = ({ email, password }) => async (dispatch) => {
         console.log('error: ', error);
         throw error || Error('REQUEST_FAILED');
       });
-    console.log('returnResponse: ', returnResponse);
+    
     return returnResponse;
   } catch (error) {
     console.log('failed: ', error);
     dispatch(asyncFailure('loginProcess'));
+  }
+};
+
+export const logoutProcess = () => async (dispatch) => {
+  dispatch(asyncStart('logoutProcess'));
+
+  try {
+    if (typeof window !== 'undefined') {
+      localStorage.clear();
+    }
+    return dispatch(logoutProcessSuccess());
+  } catch (error) {
+    console.log('failed: ', error);
+    dispatch(asyncFailure('logoutProcess'));
   }
 };

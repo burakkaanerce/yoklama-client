@@ -38,16 +38,17 @@ export default () => {
 
   const [isValid, setIsValid] = useState(true);
 
-  console.log('id: ', id);
-
   if (!id) {
     history.push('/');
   }
 
   useEffect(() => {
-    console.log('id: ', id);
     if (id) {
-      dispatch(fetchRegistration({ id }));
+      dispatch(fetchRegistration({ id })).then(result => {
+        if (result.length === 0) {
+          setIsValid(false)
+        }
+      });
     }
   }, [id]);
 
@@ -57,7 +58,6 @@ export default () => {
       const tempDate = new Date();
       const dateStart = new Date(startDate);
       const dateEnd = new Date(endDate);
-      console.log(registration.status, tempDate, dateStart, dateEnd, tempDate - dateStart, dateEnd - tempDate);
       if (registration.status || !(tempDate - dateStart > 0 && dateEnd - tempDate > 0)) {
         setIsValid(false);
       }
@@ -82,19 +82,27 @@ export default () => {
         </div>
       ) : (
         <>
-          {loading.register ? (
+          {loading.register || loading.fetchRegistration ? (
             <Spinner animation="border" variant="primary" />
           )
             : registered ? (
-              <div>
-                Kayıt Başarılı !
+              <div style={{
+                display: 'flex',
+                flex: 1,
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                alignContent: 'center',
+              }}
+              >
+                <div className="bg-success p-5 text-light font-weight-bold">
+                  Kayıt Başarılı !
+                </div>
               </div>
             ) : (
               <Formik
                 validationSchema={schema}
                 onSubmit={(values) => {
-                  console.log('values: ', values);
-
                   const { firstname, lastname, stuNo } = values;
                   dispatch(register({
                     firstname, lastname, stuNo, registrationId: id,

@@ -39,7 +39,7 @@ cursor: pointer;
 `;
 
 export default ({
-  text, onTextChange, isInvalid, isNew, setNew, selectedLecture, onSelectLecture,
+  lecturerId, text, onTextChange, isInvalid, isNew, setNew, selectedLecture, onSelectLecture,
 }) => {
   const [display, setDisplay] = useState(false);
   const [options, setOptions] = useState([]);
@@ -69,11 +69,9 @@ export default ({
       setDisplay(true);
       const callLecture = async () => {
         try {
-          const returnResponse = await findLectureFunc({ code: search })
+          const returnResponse = await findLectureFunc({ code: search, lecturerId })
             .then((result) => {
-              console.log('result: ', result);
               const { data } = result;
-              console.log('data: ', data);
               if (data) {
                 const { success, lecture } = data;
 
@@ -89,7 +87,6 @@ export default ({
               console.log('error: ', error);
               throw error || Error('REQUEST_FAILED');
             });
-          console.log('returnResponse: ', returnResponse);
           return returnResponse;
         } catch (error) {
           console.log('failed: ', error);
@@ -100,7 +97,6 @@ export default ({
       callLecture().then((result) => {
         setLoading(false);
         setOptions(result);
-        console.log('result: ', result);
       }).catch((error) => {
         setLoading(false);
         console.log('error: ', error);
@@ -112,7 +108,6 @@ export default ({
     const { current: wrap } = wrapperRef;
     if (wrap && !wrap.contains(event.target)) {
       setDisplay(false);
-      console.log({ options, search, isNew });
       if (options.length === 0 && search.length > 0 && !isNew) {
         setNew(!isNew);
         selectLecture(null);

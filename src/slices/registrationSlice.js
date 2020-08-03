@@ -39,6 +39,9 @@ const registrationSlice = createSlice({
       if(payload === 'fetchRegistrations') {
         state.registrations = []
       }
+      if(payload === 'fetchRegistration') {
+        state.registrations = null
+      }
     },
     asyncFailure: (state, {
       payload,
@@ -53,8 +56,8 @@ const registrationSlice = createSlice({
       payload,
     }) => {
       state.registration = payload;
-      state.loading.addRegistration = false;
-      state.hasErrors.addRegistration = false;
+      state.loading.fetchRegistration = false;
+      state.hasErrors.fetchRegistration = false;
     },
     fetchRegistrationsSuccess: (state, {
       payload,
@@ -105,9 +108,7 @@ export const fetchRegistration = ({ id }) => async (dispatch) => {
   try {
     const returnResponse = await fetchRegistrationFunc({ id })
       .then((result) => {
-        console.log('result: ', result);
         const { data } = result;
-        console.log('data: ', data);
         if (data) {
           const { success, registration } = data;
 
@@ -128,7 +129,6 @@ export const fetchRegistration = ({ id }) => async (dispatch) => {
         console.log('error: ', error);
         throw error || Error('REQUEST_FAILED');
       });
-    console.log('returnResponse: ', returnResponse);
     return returnResponse;
   } catch (error) {
     console.log('failed: ', error);
@@ -143,14 +143,13 @@ export const fetchRegistrations = ({ lectureId, lecturerId }) => async (dispatch
     const token = state().auth.auth.token;
     const returnResponse = await fetchRegistrationsFunc({ token, lectureId, lecturerId })
       .then((result) => {
-        console.log('result: ', result);
+        
         const { data } = result;
-        console.log('data: ', data);
+        
         if (data) {
           const { success, registration } = data;
 
           if (success && registration) {
-
             dispatch(fetchRegistrationsSuccess(registration));
             return registration;
           }
@@ -163,7 +162,7 @@ export const fetchRegistrations = ({ lectureId, lecturerId }) => async (dispatch
         console.log('error: ', error);
         throw error || Error('REQUEST_FAILED');
       });
-    console.log('returnResponse: ', returnResponse);
+    
     return returnResponse;
   } catch (error) {
     console.log('failed: ', error);
@@ -182,9 +181,9 @@ export const addRegistration = ({
       token, startDate, endDate, lectureId, lecturerId,
     })
       .then((result) => {
-        console.log('result: ', result);
+        
         const { data } = result;
-        console.log('data: ', data);
+        
         if (data) {
           const { success, registration } = data;
 
@@ -200,7 +199,7 @@ export const addRegistration = ({
         console.log('error: ', error);
         throw error || Error('REQUEST_FAILED');
       });
-    console.log('returnResponse: ', returnResponse);
+    
     return returnResponse;
   } catch (error) {
     console.log('failed: ', error);
@@ -214,9 +213,9 @@ export const register = ({ firstname, lastname, stuNo, registrationId}) => async
   try {
     const returnResponse = await registerFunc({ firstname, lastname, stuNo, registrationId})
       .then((result) => {
-        console.log('result: ', result);
+        
         const { data } = result;
-        console.log('data: ', data);
+        
         if (data) {
           const { success, message } = data;
 
@@ -233,7 +232,7 @@ export const register = ({ firstname, lastname, stuNo, registrationId}) => async
         console.log('error: ', error);
         throw error || Error('REQUEST_FAILED');
       });
-    console.log('returnResponse: ', returnResponse);
+    
     return returnResponse;
   } catch (error) {
     console.log('failed: ', error);
@@ -248,9 +247,9 @@ export const closeAccessRegistration = ({ registrationId}) => async (dispatch, s
     const token = state().auth.auth.token;
     const returnResponse = await closeAccessRegistrationFunc({ token, registrationId})
       .then((result) => {
-        console.log('result: ', result);
+        
         const { data } = result;
-        console.log('data: ', data);
+        
         if (data) {
           const { success, message } = data;
 
@@ -266,7 +265,7 @@ export const closeAccessRegistration = ({ registrationId}) => async (dispatch, s
         console.log('error: ', error);
         throw error || Error('REQUEST_FAILED');
       });
-    console.log('returnResponse: ', returnResponse);
+    
     return returnResponse;
   } catch (error) {
     console.log('failed: ', error);
@@ -281,9 +280,9 @@ export const downloadRegistrationList = ({ registrationId}) => async (dispatch, 
     const token = state().auth.auth.token;
     const returnResponse = await downloadRegistrationListFunc({ token, registrationId})
       .then((result) => {
-        console.log('result: ', result);
+        
         const { data } = result;
-        console.log('data: ', data);
+        
         if (data) {
           const { success, message, filename } = data;
 
@@ -299,7 +298,7 @@ export const downloadRegistrationList = ({ registrationId}) => async (dispatch, 
         console.log('error: ', error);
         throw error || Error('REQUEST_FAILED');
       });
-    console.log('returnResponse: ', returnResponse);
+    
     return returnResponse;
   } catch (error) {
     console.log('failed: ', error);
@@ -314,9 +313,9 @@ export const deleteRegistration = ({ registrationId}) => async (dispatch, state)
     const token = state().auth.auth.token;
     const returnResponse = await deleteRegistrationFunc({ token, registrationId})
       .then((result) => {
-        console.log('result: ', result);
+        
         const { data } = result;
-        console.log('data: ', data);
+        
         if (data) {
           const { success, message } = data;
 
@@ -332,7 +331,7 @@ export const deleteRegistration = ({ registrationId}) => async (dispatch, state)
         console.log('error: ', error);
         throw error || Error('REQUEST_FAILED');
       });
-    console.log('returnResponse: ', returnResponse);
+    
     return returnResponse;
   } catch (error) {
     console.log('failed: ', error);

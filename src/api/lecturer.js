@@ -1,8 +1,11 @@
 import axios from 'axios';
+import apiURL from '../config';
 
-export const loginProcessFunc = ({ email, password }) => axios.post('https://yoklama-api.herokuapp.com/api/lecturer/login', { email, password })
+export const loginProcessFunc = ({ email, password }) => axios.post(
+  `${apiURL}/api/lecturer/login`,
+  { email, password },
+)
   .then((result) => {
-    console.log('result: ', { result });
     return result;
   })
   .catch((error) => {
@@ -10,9 +13,11 @@ export const loginProcessFunc = ({ email, password }) => axios.post('https://yok
     throw Error('INVALID_CREDENTIALS');
   });
 
-  export const whoAmIFunc = ({ token }) => axios.post('https://yoklama-api.herokuapp.com/api/lecturer/whoami', { token })
+export const whoAmIFunc = ({ token }) => axios.post(
+  `${apiURL}/api/lecturer/whoami`,
+  { token },
+)
   .then((result) => {
-    console.log('result: ', { result });
     return result;
   })
   .catch((error) => {

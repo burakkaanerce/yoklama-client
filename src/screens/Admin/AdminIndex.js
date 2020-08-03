@@ -12,16 +12,24 @@ import * as yup from 'yup';
 import axios from 'axios';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+
+import {FaPowerOff} from 'react-icons/fa'
+
+import apiURL from '../../config';
 
 import RegistrationList from '../../components/Registration/RegistrationList';
 import Autocomplete from '../../components/Forms/Autocomplete';
 
 import { addLecture } from '../../slices/lectureSlice';
 import {
-  registrationSelector, addRegistration, fetchRegistrations, closeAccessRegistration, downloadRegistrationList, deleteRegistration
+  registrationSelector,
+  addRegistration,
+  fetchRegistrations,
+  closeAccessRegistration,
+  downloadRegistrationList,
+  deleteRegistration,
 } from '../../slices/registrationSlice';
-import { authSelector } from '../../slices/userSlice';
+import { authSelector, logoutProcess } from '../../slices/userSlice';
 
 const schema = yup.object({
   code: yup.string().required(),
@@ -29,7 +37,6 @@ const schema = yup.object({
 
 export default () => {
   const dispatch = useDispatch();
-  const history = useHistory();
 
   const { auth } = useSelector(authSelector);
   const { loading, registrations } = useSelector(registrationSelector);
@@ -37,8 +44,6 @@ export default () => {
   useEffect(() => {
     if (auth) {
       dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
-    } else {
-      history.push('/');
     }
   }, []);
 
@@ -52,8 +57,6 @@ export default () => {
   const handleClose = () => {
     if (auth) {
       dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
-    } else {
-      history.push('/');
     }
     setShow(false);
   };
@@ -64,16 +67,11 @@ export default () => {
       <Formik
         validationSchema={schema}
         onSubmit={(values, action) => {
-          console.log('values: ', values);
-          console.log('action: ', action);
-          console.log('auth: ', auth);
-
           const {
             code, name, lectureId, startDate, endDate,
           } = values;
 
           if (isNew && name.length === 0) {
-            console.log('isNew and name length is zero so it is not valid');
             action.setFieldError('name', 'HATA');
             return;
           }
@@ -82,7 +80,6 @@ export default () => {
             dispatch(addRegistration({
               startDate, endDate, lectureId, lecturerId: auth.user.id,
             })).then((registerResult) => {
-              console.log('registerResult: ', registerResult);
               dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
               setShow(false);
               return registerResult;
@@ -92,12 +89,9 @@ export default () => {
             });
           } else {
             dispatch(addLecture({ name, code, lecturerId: auth.user.id })).then((lectureResult) => {
-              console.log('lectureResult: ', lectureResult);
-
               dispatch(addRegistration({
                 startDate, endDate, lectureId: lectureResult.id, lecturerId: auth.user.id,
               })).then((registerResult) => {
-                console.log('registerResult: ', registerResult);
                 dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
                 setShow(false);
                 return registerResult;
@@ -148,6 +142,7 @@ export default () => {
                     <Form.Label>Ders Kodu</Form.Label>
                     <InputGroup>
                       <Autocomplete
+                        lecturerId={auth ? auth.user.id : null}
                         text={values.code}
                         onTextChange={handleChange}
                         isInvalid={!!errors.code && !!touched.code}
@@ -191,10 +186,7 @@ export default () => {
                         onChange={(date) => {
                           const nowDate = new Date();
                           let tempDate = date;
-                          console.log('1 date: ', tempDate, values.endDate - tempDate < 0, nowDate - tempDate > 0);
                           if (nowDate - tempDate > 0) tempDate = nowDate;
-
-                          console.log('2 date: ', tempDate, values.endDate - tempDate < 0, nowDate - tempDate > 0);
 
                           setFieldValue('startDate', tempDate);
                           if (values.endDate - tempDate < 0) {
@@ -203,6 +195,11 @@ export default () => {
                         }}
                         showTimeSelect
                         dateFormat="Pp"
+                        popperModifiers={{
+                          preventOverflow: {
+                            enabled: true,
+                          },
+                        }}
                       />
                       <Form.Control.Feedback type="invalid" tooltip>
                         {errors.startDate}
@@ -218,10 +215,7 @@ export default () => {
                         onChange={(date) => {
                           const nowDate = new Date();
                           let tempDate = date;
-                          console.log('1 date: ', tempDate, values.startDate - tempDate < 0, nowDate - tempDate > 0);
                           if (nowDate - tempDate > 0) tempDate = nowDate;
-
-                          console.log('2 date: ', tempDate, values.startDate - tempDate < 0, nowDate - tempDate > 0);
 
                           setFieldValue('endDate', tempDate);
                           if (values.startDate - tempDate > 0) {
@@ -230,6 +224,11 @@ export default () => {
                         }}
                         showTimeSelect
                         dateFormat="Pp"
+                        popperModifiers={{
+                          preventOverflow: {
+                            enabled: true,
+                          },
+                        }}
                       />
                       <Form.Control.Feedback type="invalid" tooltip>
                         {errors.endDate}
@@ -255,12 +254,20 @@ export default () => {
           </Modal>
         )}
       </Formik>
-      <div className="d-flex flex-wrap justify-content-end m-2">
+      <div className="d-flex flex-wrap justify-content-between m-2">
+        <Button
+          variant="dark"
+          onClick={() => {
+            dispatch(logoutProcess());
+          }}
+        >
+          <FaPowerOff color="white" size="1em" />
+        </Button>
         <Button variant="primary" onClick={handleShow}>
           Yoklama Listesi Oluştur
         </Button>
       </div>
-      <div className="d-flex flex-column">
+      <div className={`d-flex flex-column ${loading.fetchRegistrations ? 'justify-content-center align-items-center' : ''}`}>
         {loading.fetchRegistrations ? (
           <Spinner animation="border" variant="primary" /> 
         ) : null}
@@ -283,14 +290,13 @@ export default () => {
             registration={registration}
             onCloseAccess={(registrationId) => {
               dispatch(closeAccessRegistration({ registrationId })).then(result => {
-                console.log("result: ", result)
                 dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
               });
             }}
             onDownload={(registrationId) => {
               dispatch(downloadRegistrationList({ registrationId })).then(result => {
                 axios({
-                  url: 'https://yoklama-api.herokuapp.com/downloads/Yoklama.xlsx',
+                  url: `${apiURL}/downloads/Yoklama.xlsx`,
                   method: 'GET',
                   responseType: 'blob', // important
                 }).then((response) => {
@@ -305,7 +311,6 @@ export default () => {
             }}
             onDelete={(registrationId) => {
               dispatch(deleteRegistration({ registrationId })).then(result => {
-                console.log("result: ", result)
                 dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
               });
             }}

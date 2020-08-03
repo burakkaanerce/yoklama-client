@@ -53,9 +53,7 @@ export const addLecture = ({ name, code, lecturerId }) => async (dispatch) => {
   try {
     const returnResponse = await addLectureFunc({ name, code, lecturerId })
       .then((result) => {
-        console.log('result: ', result);
         const { data } = result;
-        console.log('data: ', data);
         if (data) {
           const { success, lecture } = data;
 
@@ -71,7 +69,6 @@ export const addLecture = ({ name, code, lecturerId }) => async (dispatch) => {
         console.log('error: ', error);
         throw error || Error('REQUEST_FAILED');
       });
-    console.log('returnResponse: ', returnResponse);
     return returnResponse;
   } catch (error) {
     console.log('failed: ', error);

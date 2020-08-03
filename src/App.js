@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 
 import {
-  BrowserRouter as Router, Switch, Route, Redirect, useHistory
+  BrowserRouter as Router, Switch, Route, Redirect,
 } from 'react-router-dom';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Home from './screens/Home';
 import NewRegistration from './screens/NewRegistration';
@@ -12,28 +12,43 @@ import NewRegistration from './screens/NewRegistration';
 import AdminIndex from './screens/Admin/AdminIndex';
 
 import { whoAmIFunc } from './api/lecturer';
-import { loginAction } from './slices/userSlice';
+import { loginAction, authSelector } from './slices/userSlice';
+
+function PrivateRoute({ children, ...rest }) {
+  const { auth } = useSelector(authSelector);
+  return (
+    <Route
+      {...rest}
+      render={({ location }) => (auth ? (
+        children
+      ) : (
+        <Redirect
+          to={{
+            pathname: '/',
+            state: { from: location },
+          }}
+        />
+      ))
+      }
+    />
+  );
+}
 
 function App() {
   const dispatch = useDispatch();
-  const history = useHistory();
 
-  console.log("history: ", history)
   useEffect(() => {
     const token = localStorage.getItem('token');
 
     if (token) {
       whoAmIFunc({ token })
         .then((result) => {
-          console.log('result: ', result);
           const { data } = result;
           if (data) {
             const { success, user } = data;
 
             if (success && user) {
-              console.log('user: ', user);
               dispatch(loginAction({ token, user })).then((result) => {
-                console.log('result: ', result);
               });
             }
           }
@@ -59,9 +74,9 @@ function App() {
           }}
           />
         </Route>
-        <Route exact path="/admin">
+        <PrivateRoute exact path="/admin">
           <AdminIndex />
-        </Route>
+        </PrivateRoute>
       </Switch>
     </Router>
   );

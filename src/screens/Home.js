@@ -35,7 +35,6 @@ export default () => {
   const { loading, hasErrors, auth } = useSelector(authSelector);
 
   useEffect(() => {
-    console.log('auth: ', auth);
     if (auth) {
       history.push('/admin');
     }
@@ -46,11 +45,8 @@ export default () => {
       <Formik
         validationSchema={schema}
         onSubmit={(values) => {
-          console.log('values: ', values);
-
           const { email, password } = values;
           dispatch(loginProcess({ email, password })).then((result) => {
-            console.log('result: ', result);
             if (result) {
               history.push('/admin');
             }
@@ -101,7 +97,7 @@ export default () => {
                     <StyledFormLabel>Şifre</StyledFormLabel>
                     <InputGroup>
                       <Form.Control
-                        type="text"
+                        type="password"
                         placeholder="Şifre"
                         name="password"
                         value={values.password}

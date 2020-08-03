@@ -3,6 +3,7 @@ import { Button, Modal } from 'react-bootstrap';
 import styled from 'styled-components';
 import moment from 'moment';
 import { MdDelete } from 'react-icons/md';
+import useDeviceDetect from "../../config/useDeviceDetect";
 
 const RegisterList = styled.div`
 -webkit-box-shadow: 0px 2px 4px 2px #cfd8dc; 
@@ -16,6 +17,8 @@ box-shadow: 0px 2px 4px 2px #78909c;
 }
 `;
 export default ({ registration, onCloseAccess, onDownload, onDelete }) => {
+  const { isMobile } = useDeviceDetect();
+  
   const {
     Lecture, Lecturer, start_date: startDate, end_date: endDate, id, status,
   } = registration;
@@ -40,7 +43,7 @@ export default ({ registration, onCloseAccess, onDownload, onDelete }) => {
           </span>
         </Modal.Body>
       </Modal>
-      <div className="d-flex flex-row flex-grow-1">
+      <div className={`d-flex ${isMobile ? 'flex-column' : 'flex-row' } flex-grow-1`}>
         <div className="d-flex flex-row flex-1" style={{ flex: 1 }}>
           <Button
             className="flex-grow-1 bg-danger"
@@ -51,7 +54,7 @@ export default ({ registration, onCloseAccess, onDownload, onDelete }) => {
             <MdDelete color="white" size="2.5em" />
           </Button>
         </div>
-        <div className="d-flex flex-column pl-2" style={{ flex: 8 }}>
+        <div className="d-flex flex-column p-2" style={{ flex: 8 }}>
           <span className="font-weight-bold">
             Ders Kodu / Adı:
           </span>
@@ -73,11 +76,9 @@ export default ({ registration, onCloseAccess, onDownload, onDelete }) => {
             onClick={() => {
               handleShow();
               navigator.clipboard.writeText(`https://yoklama-listesi.herokuapp.com/register/${id}`).then(() => {
-                /* clipboard successfully set */
-                console.log('copied');
+                
               }, () => {
-                /* clipboard write failed */
-                console.log('not copied');
+                
               });
             }}
           >
