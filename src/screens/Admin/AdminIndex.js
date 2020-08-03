@@ -32,7 +32,7 @@ import {
 import { authSelector, logoutProcess } from '../../slices/userSlice';
 
 const schema = yup.object({
-  code: yup.string().required(),
+  code: yup.string().required('Bu alan zorunludur'),
 });
 
 export default () => {

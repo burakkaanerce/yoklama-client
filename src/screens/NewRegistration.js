@@ -23,9 +23,9 @@ letter-spacing: calc((8px + 0.5vw + 0.5vh) / (1.618 * 20));
 `;
 
 const schema = yup.object({
-  firstname: yup.string().required(),
-  lastname: yup.string().required(),
-  stuNo: yup.number().required(),
+  firstname: yup.string().required('Bu alan zorunludur'),
+  lastname: yup.string().required('Bu alan zorunludur'),
+  stuNo: yup.number().required('Bu alan zorunludur'),
 });
 
 export default () => {
