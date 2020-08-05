@@ -13,7 +13,7 @@ import axios from 'axios';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import {FaPowerOff} from 'react-icons/fa'
+import { FaPowerOff } from 'react-icons/fa';
 
 import apiURL from '../../config';
 
@@ -48,8 +48,8 @@ export default () => {
   }, []);
 
   useEffect(() => {
-    
-  }, [registrations])
+
+  }, [registrations]);
 
   const [show, setShow] = useState(false);
   const [isNew, setNew] = useState(false);
@@ -63,7 +63,7 @@ export default () => {
   const handleShow = () => setShow(true);
 
   return (
-    <Container fluid className="m-0" style={{ backgroundColor: '#b0bec5'}}>
+    <Container fluid className="m-0" style={{ backgroundColor: '#b0bec5' }}>
       <Formik
         validationSchema={schema}
         onSubmit={(values, action) => {
@@ -138,7 +138,7 @@ export default () => {
               </Form.Row>
             ) : null} */}
                 <Form.Row className="d-flex my-4 mx-2">
-                  <Form.Group as={Col} xs="12" controlId="email">
+                  <Form.Group as={Col} xs="12" controlId="code">
                     <Form.Label>Ders Kodu</Form.Label>
                     <InputGroup>
                       <Autocomplete
@@ -164,7 +164,12 @@ export default () => {
                           }
                         }}
                       />
-                      {isNew ? (
+                    </InputGroup>
+                  </Form.Group>
+                  {isNew ? (
+                    <Form.Group as={Col} xs="12" controlId="name">
+                      <Form.Label>Ders Adı</Form.Label>
+                      <InputGroup>
                         <Form.Control
                           type="text"
                           placeholder="Ders Adı"
@@ -174,9 +179,9 @@ export default () => {
                           isInvalid={!!errors.name && !!touched.name}
                           autoComplete="off"
                         />
-                      ) : null}
-                    </InputGroup>
-                  </Form.Group>
+                      </InputGroup>
+                    </Form.Group>
+                  ) : null}
                   <Form.Group as={Col} xs="12" controlId="startDate">
                     <Form.Label>Başlangıç Tarihi</Form.Label>
                     <InputGroup>
@@ -269,7 +274,7 @@ export default () => {
       </div>
       <div className={`d-flex flex-column ${loading.fetchRegistrations ? 'justify-content-center align-items-center' : ''}`}>
         {loading.fetchRegistrations ? (
-          <Spinner animation="border" variant="primary" /> 
+          <Spinner animation="border" variant="primary" />
         ) : null}
         {/* {registrations.map((registration) => (
           <RegistrationBox
@@ -289,12 +294,12 @@ export default () => {
           <RegistrationList
             registration={registration}
             onCloseAccess={(registrationId) => {
-              dispatch(closeAccessRegistration({ registrationId })).then(result => {
+              dispatch(closeAccessRegistration({ registrationId })).then((result) => {
                 dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
               });
             }}
             onDownload={(registrationId) => {
-              dispatch(downloadRegistrationList({ registrationId })).then(result => {
+              dispatch(downloadRegistrationList({ registrationId })).then((result) => {
                 axios({
                   url: `${apiURL}/downloads/Yoklama.xlsx`,
                   method: 'GET',
@@ -310,7 +315,7 @@ export default () => {
               });
             }}
             onDelete={(registrationId) => {
-              dispatch(deleteRegistration({ registrationId })).then(result => {
+              dispatch(deleteRegistration({ registrationId })).then((result) => {
                 dispatch(fetchRegistrations({ lecturerId: auth.user.id }));
               });
             }}

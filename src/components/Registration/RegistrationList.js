@@ -76,9 +76,9 @@ export default ({ registration, onCloseAccess, onDownload, onDelete }) => {
             onClick={() => {
               handleShow();
               navigator.clipboard.writeText(`https://yoklama-listesi.herokuapp.com/register/${id}`).then(() => {
-                
+                console.log(`https://yoklama-listesi.herokuapp.com/register/${id}`)
               }, () => {
-                
+                console.log(`https://yoklama-listesi.herokuapp.com/register/${id}`)
               });
             }}
           >
